@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,6 +37,16 @@ private final ModelMapper modelMapper;
     public ResponseEntity<Product> createProduct(ProductDto productDto) {
         Product product = modelMapper.map(productDto, Product.class);
         return new ResponseEntity<>(productRepository.save(product), HttpStatus.CREATED);
+    }
+    @Override
+    public ResponseEntity<Product> updateProduct(Long id, ProductDto productDto) {
+        Product product = productRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("Product with ID " + id + " not found"));
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setQuantity(productDto.getQuantity());
+        Product updatedProduct = productRepository.save(product);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @Override
@@ -75,4 +86,12 @@ private final ModelMapper modelMapper;
         return productRepository.findAll(PageRequest.of(offset,pageSize).withSort(Sort.by(field)));
     }
 
+    @PostConstruct
+    public void initDB() {
+        List<Product> products = IntStream.rangeClosed(1, 100)
+                .mapToObj(i -> new Product((long) i,"product" + i, 1000.0, new Random()
+                        .nextInt(50000)))
+                .collect(Collectors.toList());
+        productRepository.saveAll(products);
+    }
 }

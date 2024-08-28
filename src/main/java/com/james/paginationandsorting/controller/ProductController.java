@@ -27,21 +27,19 @@ public class ProductController {
         return  productService.getProductById(id);
     }
 
-    @GetMapping("/all")
-    public List<Product> getAllProductsController() {
-        return  productService.getAllProducts();
-    }
-
     @GetMapping("get_all")
     public Response<List<Product>> getProducts() {
-        List<Product> allProducts = productService.getAllProducts();
-        return new Response<>(allProducts);
+        return (Response<List<Product>>) productService.getAllProducts();
+    }
+
+    @PutMapping("update_product")
+    public ResponseEntity updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto){
+        return productService.updateProduct(id, productDto);
     }
 
     @GetMapping("/{field}")
     public Response<List<Product>> getProductsWithSort(@PathVariable String field) {
-        List<Product> allProducts = productService.findProductsWithSorting(field);
-        return new Response<>(allProducts);
+        return (Response<List<Product>>) productService.findProductsWithSorting(field);
     }
 
     @GetMapping("/pagination/{offset}/{pageSize}")

@@ -12,6 +12,8 @@ public interface ProductService {
 
     ResponseEntity<Product> createProduct(ProductDto productDto);
 
+    ResponseEntity<Product> updateProduct(Long id, ProductDto productDto);
+
     Product getProductById(Long id);
 
     List<Product> findProductsWithSorting(String field);
